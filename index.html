@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Interview Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#12121a;
+  --bg3:#1a1a26;
+  --card:#16161f;
+  --border:#2a2a3d;
+  --blue:#4361ee;
+  --purple:#7c3aed;
+  --cyan:#06b6d4;
+  --green:#10b981;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --pink:#ec4899;
+  --text:#f0f0ff;
+  --text2:#9090b0;
+  --text3:#5a5a7a;
+  --glow:0 0 30px rgba(67,97,238,0.3);
+  --r:12px;--rl:20px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse at 20% 20%,rgba(67,97,238,0.08) 0%,transparent 50%),
+             radial-gradient(ellipse at 80% 80%,rgba(124,58,237,0.08) 0%,transparent 50%),
+             radial-gradient(ellipse at 50% 50%,rgba(6,182,212,0.04) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+.hdr{
+  position:relative;z-index:10;
+  padding:20px 32px;
+  display:flex;align-items:center;gap:16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(10,10,15,0.8);
+  backdrop-filter:blur(20px);
+}
+.logo{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  box-shadow:0 0 20px rgba(67,97,238,0.4);
+}
+.logo-text{font-family:Syne,sans-serif;font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--logo-from,#fff),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.badge{background:linear-gradient(135deg,rgba(67,97,238,0.2),rgba(124,58,237,0.2));border:1px solid rgba(67,97,238,0.3);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;color:var(--cyan)}
+.tabs{
+  position:relative;z-index:10;
+  display:flex;overflow-x:auto;
+  border-bottom:1px solid var(--border);
+  background:rgba(10,10,15,0.6);
+  backdrop-filter:blur(10px);
+  padding:0 24px;
+}
+.tab{
+  padding:14px 18px;font-size:12px;font-weight:500;
+  color:var(--text3);cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all .2s;
+  border:none;background:none;font-family:inherit;
+  display:flex;align-items:center;gap:6px;
+}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan);font-weight:600}
+.content{position:relative;z-index:5;max-width:960px;margin:0 auto;padding:28px 16px}
+.panel{display:none}
+.panel.active{display:block;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:24px;margin-bottom:18px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(67,97,238,0.5),transparent)}
+.ct{font-family:Syne,sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;gap:10px;margin-bottom:18px;color:var(--text)}
+.ci{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.inp{width:100%;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);font-size:13px;color:var(--text);outline:none;transition:all .2s;font-family:inherit}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(67,97,238,0.15)}
+.inp option{background:var(--bg2)}
+.ta{resize:vertical;min-height:100px;line-height:1.6}
+.lbl{font-size:11px;color:var(--text3);font-weight:600;margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em}
+.fg{margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.btn{padding:11px 22px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--text);transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.bp{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-color:var(--blue);box-shadow:0 4px 20px rgba(67,97,238,0.3)}
+.bp:hover{box-shadow:0 6px 24px rgba(67,97,238,0.5)}
+.bg2{background:linear-gradient(135deg,var(--green),#059669);color:#fff;border-color:var(--green);box-shadow:0 4px 20px rgba(16,185,129,0.3)}
+.br{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff;border-color:var(--red)}
+.ba{background:linear-gradient(135deg,var(--amber),#d97706);color:#fff;border-color:var(--amber)}
+.bc{background:linear-gradient(135deg,var(--cyan),#0891b2);color:#fff;border-color:var(--cyan)}
+.bpk{background:linear-gradient(135deg,var(--pink),#db2777);color:#fff;border-color:var(--pink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin:2px}
+.tg{background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3)}
+.tr{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)}
+.tb{background:rgba(67,97,238,0.15);color:#818cf8;border:1px solid rgba(67,97,238,0.3)}
+.ta2{background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)}
+.tc{background:rgba(6,182,212,0.15);color:#22d3ee;border:1px solid rgba(6,182,212,0.3)}
+.tp{background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3)}
+.alert{padding:12px 16px;border-radius:var(--r);font-size:13px;margin-top:12px;line-height:1.7}
+.ai{background:rgba(67,97,238,0.1);color:#818cf8;border-left:3px solid var(--blue)}
+.as{background:rgba(16,185,129,0.1);color:#34d399;border-left:3px solid var(--green)}
+.ad{background:rgba(239,68,68,0.1);color:#f87171;border-left:3px solid var(--red)}
+.aw{background:rgba(245,158,11,0.1);color:#fbbf24;border-left:3px solid var(--amber)}
+.spw{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px;gap:16px}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spt{font-size:13px;color:var(--text3)}
+.hero{text-align:center;padding:60px 20px 40px;position:relative}
+.hero-title{font-family:Syne,sans-serif;font-size:52px;font-weight:800;line-height:1.1;margin-bottom:16px}
+.hero-title span{background:linear-gradient(135deg,var(--blue),var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:16px;color:var(--text2);max-width:540px;margin:0 auto 32px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:40px;margin-top:32px}
+.hero-stat-val{font-family:Syne,sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-stat-lbl{font-size:12px;color:var(--text3);margin-top:2px}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:32px 0}
+.feat{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:20px;text-align:center;transition:all .3s;cursor:pointer}
+.feat:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:var(--glow)}
+.feat-icon{font-size:32px;margin-bottom:12px}
+.feat-title{font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:6px}
+.feat-desc{font-size:12px;color:var(--text3);line-height:1.6}
+.interview-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:28px;margin-bottom:16px;text-align:center}
+.ai-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;box-shadow:0 0 30px rgba(67,97,238,0.4);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 30px rgba(67,97,238,0.4)}50%{box-shadow:0 0 50px rgba(67,97,238,0.7)}}
+.ai-speaking{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px;font-family:Syne,sans-serif}
+.q-text{font-size:18px;font-weight:600;color:var(--text);line-height:1.6;margin:16px 0;font-family:Syne,sans-serif}
+.q-num{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.voice-meter{display:flex;align-items:center;justify-content:center;gap:4px;height:50px;margin:16px 0}
+.bar{width:4px;border-radius:2px;background:var(--blue);animation:wave 1s ease-in-out infinite;opacity:0.3}
+.bar:nth-child(1){animation-delay:0s;height:20px}
+.bar:nth-child(2){animation-delay:.1s;height:35px}
+.bar:nth-child(3){animation-delay:.2s;height:25px}
+.bar:nth-child(4){animation-delay:.3s;height:45px}
+.bar:nth-child(5){animation-delay:.4s;height:30px}
+.bar:nth-child(6){animation-delay:.5s;height:40px}
+.bar:nth-child(7){animation-delay:.6s;height:20px}
+.bar:nth-child(8){animation-delay:.7s;height:35px}
+.bar:nth-child(9){animation-delay:.8s;height:25px}
+.bar:nth-child(10){animation-delay:.9s;height:15px}
+@keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.8)}}
+.bar.active{opacity:1;background:var(--cyan)}
+.prog-wrap{margin-bottom:12px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:600}
+.prog-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.pblue{background:linear-gradient(to right,var(--blue),var(--cyan))}
+.pgreen{background:linear-gradient(to right,var(--green),#34d399)}
+.pred{background:linear-gradient(to right,var(--red),#f87171)}
+.pamber{background:linear-gradient(to right,var(--amber),#fbbf24)}
+.ppurple{background:linear-gradient(to right,var(--purple),#a78bfa)}
+.transcript-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:16px;min-height:80px;font-size:13px;color:var(--text2);line-height:1.8;margin:12px 0;font-style:italic}
+.timer{font-family:Syne,sans-serif;font-size:32px;font-weight:800;color:var(--cyan);text-align:center;margin:8px 0}
+.timer.warning{color:var(--amber)}
+.timer.danger{color:var(--red);animation:blink .5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.conf-meter{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin:12px 0}
+.conf-label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.conf-bar-wrap{display:flex;align-items:center;gap:12px}
+.conf-bar{flex:1;height:10px;background:var(--bg3);border-radius:5px;overflow:hidden}
+.conf-fill{height:100%;border-radius:5px;transition:width .5s;background:linear-gradient(to right,var(--red),var(--amber),var(--green))}
+.conf-val{font-family:Syne,sans-serif;font-size:18px;font-weight:800;min-width:45px;text-align:right}
+.q-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;transition:all .2s}
+.q-card:hover{border-color:var(--blue)}
+.q-card-num{font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.q-card-text{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.q-card-tip{font-size:12px;color:var(--text3);line-height:1.6}
+.q-card-ans{font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);line-height:1.7;display:none}
+.q-card.expanded .q-card-ans{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:16px;text-align:center}
+.stat-val{font-family:Syne,sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-lbl{font-size:10px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.cert{background:linear-gradient(135deg,#0a0a1a,#12122a);border:2px solid var(--blue);border-radius:var(--rl);padding:32px;text-align:center;position:relative;overflow:hidden}
+.cert::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse,rgba(67,97,238,0.08),transparent 60%)}
+.cert-title{font-family:Syne,sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.cert-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.cert-name{font-family:Syne,sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px}
+.streak{display:flex;align-items:center;gap:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:var(--r);padding:10px 16px;margin-bottom:14px}
+.streak-fire{font-size:20px}
+.streak-text{font-size:13px;color:var(--amber);font-weight:600}
+.diff-btns{display:flex;gap:10px;margin-bottom:14px}
+.diff-btn{flex:1;padding:10px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;font-size:13px;font-weight:600;text-align:center;transition:all .2s;font-family:inherit}
+.diff-btn.active-easy{background:rgba(16,185,129,0.2);border-color:var(--green);color:var(--green)}
+.diff-btn.active-medium{background:rgba(245,158,11,0.2);border-color:var(--amber);color:var(--amber)}
+.diff-btn.active-hard{background:rgba(239,68,68,0.2);border-color:var(--red);color:var(--red)}
+.company-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.company-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;transition:all .2s}
+.company-card:hover,.company-card.selected{border-color:var(--blue);background:rgba(67,97,238,0.1)}
+.company-icon{font-size:24px;margin-bottom:6px}
+.company-name{font-size:11px;font-weight:600;color:var(--text2)}
+@media(max-width:640px){
+  .g2,.g3{grid-template-columns:1fr}
+  .features{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .company-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-title{font-size:32px}
+  .hero-stats{gap:20px}
+  .tab{padding:12px 10px;font-size:11px}
+}
+
+/* LIGHT MODE */
+body.light{
+  --bg:#f0f4ff;
+  --bg2:#ffffff;
+  --bg3:#e8ecf8;
+  --card:#ffffff;
+  --border:#d0d8f0;
+  --text:#0a0a1a;
+  --text2:#2a2a4a;
+  --text3:#6666aa;
+  --blue:#3451d1;
+  --purple:#6d28d9;
+  --cyan:#0891b2;
+}
+body.light .hero-title{color:#0a0a1a}
+body.light .hero-title span{background:linear-gradient(135deg,#3451d1,#0891b2,#6d28d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+body.light{--logo-from:#0a0a1a;--cyan:#0369a1}
+body.light .logo-text{background:linear-gradient(135deg,#0a0a1a,#0369a1) !important;-webkit-background-clip:text !important;-webkit-text-fill-color:transparent !important;}
+body.light .ct{color:#0a0a1a}
+body.light .logo-sub{color:#4a4a6a !important}
+body.light .feat-title{color:#0a0a1a}
+body.light .q-text{color:#0a0a1a}
+body.light .ai-speaking{color:#0a0a1a}
+body.light .cert-name{color:#0a0a1a}
+body.light .stat-val{background:linear-gradient(135deg,#3451d1,#0891b2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+body.light .hero-stat-val{background:linear-gradient(135deg,#0891b2,#3451d1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+body.light .transcript-box{background:#f8f9ff;color:#2a2a4a}
+body.light .inp{background:#f8f9ff;color:#0a0a1a;border-color:#c0c8e8}
+body.light .card{box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+body.light::before{
+  background:radial-gradient(ellipse at 20% 20%,rgba(67,97,238,0.05) 0%,transparent 50%),
+             radial-gradient(ellipse at 80% 80%,rgba(124,58,237,0.05) 0%,transparent 50%);
+}
+body.light .hdr{background:rgba(15,23,80,0.95) !important;}
+body.light .tabs{background:rgba(240,244,255,0.8);}
+
+/* THEME TOGGLE */
+.theme-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1px solid var(--border);
+  background:var(--bg2);
+  cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.theme-btn:hover{transform:scale(1.1);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">🎯</div>
+  <div>
+    <div class="logo-text">AI Interview Coach</div>
+    <div class="logo-sub">Your personal AI-powered interview trainer</div>
+  </div>
+  <div class="hdr-right"><button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+    <div class="badge" id="streak-badge">🔥 0 Day Streak</div>
+    <!-- FIX 1: Changed "Groq AI" to "Claude AI" -->
+    <div class="badge">✨ Groq AI</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" id="tab-home" onclick="sw('home')">🏠 Home</button>
+  <button class="tab" id="tab-practice" onclick="sw('practice')">🎤 Practice</button>
+  <button class="tab" id="tab-mock" onclick="sw('mock')">🏢 Mock Interview</button>
+  <button class="tab" id="tab-questions" onclick="sw('questions')">❓ Questions</button>
+  <button class="tab" id="tab-progress" onclick="sw('progress')">📈 Progress</button>
+  <button class="tab" id="tab-tips" onclick="sw('tips')">💡 Tips</button>
+  <button class="tab" id="tab-cert" onclick="sw('cert')">🏆 Certificate</button>
+  <button class="tab" id="tab-feedback" onclick="sw('feedback')">💬 Feedback</button>
+</div>
+
+<div class="content">
+
+<!-- HOME -->
+<div class="panel active" id="panel-home">
+  <div class="hero">
+    <div class="hero-title">Ace Your Next<br/><span>Interview with AI</span></div>
+    <div class="hero-sub">Practice real interviews, get your confidence scored, and land your dream job with personalized AI coaching.</div>
+    <div class="row" style="justify-content:center;gap:12px">
+      <button class="btn bp" onclick="sw('practice')" style="padding:14px 28px;font-size:14px">🎤 Start Practicing</button>
+      <button class="btn bc" onclick="sw('mock')" style="padding:14px 28px;font-size:14px">🏢 Mock Interview</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-val" id="total-sessions">0</div><div class="hero-stat-lbl">Sessions Done</div></div>
+      <div><div class="hero-stat-val" id="avg-score">0%</div><div class="hero-stat-lbl">Avg Confidence</div></div>
+      <div><div class="hero-stat-val" id="questions-answered">0</div><div class="hero-stat-lbl">Questions Answered</div></div>
+      <div><div class="hero-stat-val" id="streak-count">0</div><div class="hero-stat-lbl">Day Streak</div></div>
+    </div>
+  </div>
+  <div class="features">
+    <div class="feat" onclick="sw('practice')">
+      <div class="feat-icon">🎤</div>
+      <div class="feat-title">Voice Interview</div>
+      <div class="feat-desc">Answer questions by speaking. AI listens and evaluates your response in real-time.</div>
+    </div>
+    <div class="feat" onclick="sw('mock')">
+      <div class="feat-icon">🏢</div>
+      <div class="feat-title">Mock Interview</div>
+      <div class="feat-desc">Simulate a full interview at Google, TCS, Infosys and 10+ top companies.</div>
+    </div>
+    <div class="feat" onclick="sw('questions')">
+      <div class="feat-icon">❓</div>
+      <div class="feat-title">Question Bank</div>
+      <div class="feat-desc">500+ questions across Technical, HR, Behavioral and Situational categories.</div>
+    </div>
+    <div class="feat" onclick="sw('progress')">
+      <div class="feat-icon">📈</div>
+      <div class="feat-title">Progress Tracker</div>
+      <div class="feat-desc">Track your improvement over time with detailed analytics and charts.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🧠</div>
+      <div class="feat-title">Confidence Scoring</div>
+      <div class="feat-desc">AI analyzes your speech pace, filler words, and tone to score your confidence.</div>
+    </div>
+    <div class="feat" onclick="sw('cert')">
+      <div class="feat-icon">🏆</div>
+      <div class="feat-title">Certificate</div>
+      <div class="feat-desc">Earn certificates after completing interview rounds to showcase on LinkedIn.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div class="panel" id="panel-practice">
+  <div class="card">
+    <div class="ct"><div class="ci" style="background:rgba(67,97,238,0.2)">🎯</div>Setup Your Practice Session</div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Your Name</label><input class="inp" id="p-name" placeholder="e.g. Nikhila"/></div>
+      <div class="fg"><label class="lbl">Target Job Role</label><input class="inp" id="p-role" placeholder="e.g. Data Analyst, Software Engineer"/></div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Experience Level</label>
+        <select class="inp" id="p-level">
+          <option>Fresher (0-1 years)</option>
+          <option>Junior (1-3 years)</option>
+          <option>Mid Level (3-5 years)</option>
+          <option>Senior (5+ years)</option>
+        </select>
+      </div>
+      <div class="fg"><label class="lbl">Interview Type</label>
+        <select class="inp" id="p-type">
+          <option value="all">All Types</option>
+          <option value="technical">Technical Only</option>
+          <option value="hr">HR & Behavioral</option>
+          <option value="situational">Situational</option>
+          <option value="problem-solving">Problem Solving</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Difficulty</label>
+      <div class="diff-btns">
+        <div class="diff-btn active-easy" id="diff-easy" onclick="setDiff('easy')">😊 Easy</div>
+        <div class="diff-btn" id="diff-medium" onclick="setDiff('medium')">🔥 Medium</div>
+        <div class="diff-btn" id="diff-hard" onclick="setDiff('hard')">💀 Hard</div>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Number of Questions</label>
+      <select class="inp" id="p-count">
+        <option value="5">5 Questions (Quick)</option>
+        <option value="10" selected>10 Questions (Standard)</option>
+        <option value="20">20 Questions (Full)</option>
+        <option value="50">50 Questions (Marathon)</option>
+      </select>
+    </div>
+    <div class="fg"><label class="lbl">Your Skills (Optional)</label><input class="inp" id="p-skills" placeholder="e.g. Python, SQL, Machine Learning"/></div>
+    <button class="btn bp" onclick="startPractice()">🎤 Start Practice Session</button>
+  </div>
+  <div id="practice-area"></div>
+</div>
+
+<!-- MOCK INTERVIEW -->
+<div class="panel" id="panel-mock">
+  <div class="card">
+    <div class="ct"><div class="ci" style="background:rgba(6,182,212,0.2)">🏢</div>Choose Your Mock Interview</div>
+    <div class="fg"><label class="lbl">Select Company Style</label>
+      <div class="company-grid">
+        <div class="company-card selected" id="comp-google" onclick="selectCompany('Google')"><div class="company-icon">🔍</div><div class="company-name">Google</div></div>
+        <div class="company-card" id="comp-tcs" onclick="selectCompany('TCS')"><div class="company-icon">💼</div><div class="company-name">TCS</div></div>
+        <div class="company-card" id="comp-infosys" onclick="selectCompany('Infosys')"><div class="company-icon">🌐</div><div class="company-name">Infosys</div></div>
+        <div class="company-card" id="comp-wipro" onclick="selectCompany('Wipro')"><div class="company-icon">🔷</div><div class="company-name">Wipro</div></div>
+        <div class="company-card" id="comp-amazon" onclick="selectCompany('Amazon')"><div class="company-icon">📦</div><div class="company-name">Amazon</div></div>
+        <div class="company-card" id="comp-microsoft" onclick="selectCompany('Microsoft')"><div class="company-icon">🪟</div><div class="company-name">Microsoft</div></div>
+        <div class="company-card" id="comp-startup" onclick="selectCompany('Startup')"><div class="company-icon">🚀</div><div class="company-name">Startup</div></div>
+        <div class="company-card" id="comp-custom" onclick="selectCompany('Custom')"><div class="company-icon">✏️</div><div class="company-name">Custom</div></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Job Role</label><input class="inp" id="m-role" placeholder="e.g. Software Engineer"/></div>
+      <div class="fg"><label class="lbl">Round Type</label>
+        <select class="inp" id="m-round">
+          <option>HR Round</option>
+          <option>Technical Round 1</option>
+          <option>Technical Round 2</option>
+          <option>Managerial Round</option>
+          <option>Full Interview (All Rounds)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn bc" onclick="startMock()">🏢 Start Mock Interview</button>
+  </div>
+  <div id="mock-area"></div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="panel" id="panel-questions">
+  <div class="card">
+    <div class="ct"><div class="ci" style="background:rgba(124,58,237,0.2)">❓</div>Question Bank Generator</div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Job Role</label><input class="inp" id="q-role" placeholder="e.g. Data Analyst"/></div>
+      <div class="fg"><label class="lbl">Category</label>
+        <select class="inp" id="q-cat">
+          <option value="all">All Categories</option>
+          <option value="technical">Technical</option>
+          <option value="hr">HR & Behavioral</option>
+          <option value="situational">Situational</option>
+          <option value="tricky">Tricky & Tough</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Number of Questions</label>
+      <select class="inp" id="q-count">
+        <option value="20">20 Questions</option>
+        <option value="30">30 Questions</option>
+        <option value="50" selected>50 Questions</option>
+      </select>
+    </div>
+    <button class="btn bpk" onclick="generateQuestions()">❓ Generate Questions</button>
+  </div>
+  <div id="questions-area"></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="panel" id="panel-progress">
+  <div id="progress-area">
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="prog-sessions">0</div><div class="stat-lbl">Total Sessions</div></div>
+      <div class="stat"><div class="stat-val" id="prog-avg">0%</div><div class="stat-lbl">Avg Confidence</div></div>
+      <div class="stat"><div class="stat-val" id="prog-best">0%</div><div class="stat-lbl">Best Score</div></div>
+      <div class="stat"><div class="stat-val" id="prog-questions">0</div><div class="stat-lbl">Questions Done</div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><div class="ci" style="background:rgba(16,185,129,0.2)">📊</div>Skill Progress</div>
+      <div class="prog-wrap"><div class="prog-label"><span>Technical Knowledge</span><span id="sk-tech">0%</span></div><div class="prog-bar"><div class="prog-fill pblue" id="sk-tech-bar" style="width:0%"></div></div></div>
+      <div class="prog-wrap"><div class="prog-label"><span>Communication</span><span id="sk-comm">0%</span></div><div class="prog-bar"><div class="prog-fill pgreen" id="sk-comm-bar" style="width:0%"></div></div></div>
+      <div class="prog-wrap"><div class="prog-label"><span>Confidence</span><span id="sk-conf">0%</span></div><div class="prog-bar"><div class="prog-fill ppurple" id="sk-conf-bar" style="width:0%"></div></div></div>
+      <div class="prog-wrap"><div class="prog-label"><span>Problem Solving</span><span id="sk-prob">0%</span></div><div class="prog-bar"><div class="prog-fill pamber" id="sk-prob-bar" style="width:0%"></div></div></div>
+      <div class="prog-wrap"><div class="prog-label"><span>HR & Behavioral</span><span id="sk-hr">0%</span></div><div class="prog-bar"><div class="prog-fill pred" id="sk-hr-bar" style="width:0%"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><div class="ci" style="background:rgba(245,158,11,0.2)">📅</div>Session History</div>
+      <div id="session-history"><div style="text-align:center;color:var(--text3);padding:30px;font-size:13px">No sessions yet. Start practicing to see your history! 🎯</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="panel" id="panel-tips">
+  <div class="card">
+    <div class="ct"><div class="ci" style="background:rgba(6,182,212,0.2)">🧠</div>Confidence Building Tips</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px">
+        <div style="font-size:24px;margin-bottom:8px">🗣️</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--cyan)">Speak Slowly & Clearly</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7">Take a breath before answering. Speaking at 120-150 words per minute sounds most confident to interviewers.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px">
+        <div style="font-size:24px;margin-bottom:8px">⏸️</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--purple)">Pause Before Answering</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7">A 2-3 second pause before answering shows thoughtfulness, not weakness. It's a sign of confidence.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px">
+        <div style="font-size:24px;margin-bottom:8px">🚫</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--amber)">Avoid Filler Words</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7">Words like "umm", "uh", "like", "you know" reduce your credibility. Practice pausing silently instead.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px">
+        <div style="font-size:24px;margin-bottom:8px">💪</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--green)">Use STAR Method</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7"><strong>S</strong>ituation → <strong>T</strong>ask → <strong>A</strong>ction → <strong>R</strong>esult. Structure every behavioral answer this way.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px">
+        <div style="font-size:24px;margin-bottom:8px">👁️</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--pink)">Maintain Eye Contact</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7">Look at the camera during video interviews. In person, maintain natural eye contact — not a stare!</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px">
+        <div style="font-size:24px;margin-bottom:8px">🎯</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--blue)">Research the Company</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7">Know the company's mission, recent news, and products. This shows genuine interest and preparation.</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct"><div class="ci" style="background:rgba(239,68,68,0.2)">🚫</div>Common Mistakes to Avoid</div>
+    <div id="mistakes-list">
+      <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--red);font-size:16px">✗</span><div><strong style="color:var(--text)">Saying "I don't know"</strong><br/><span style="color:var(--text3)">Instead say "That's a great question, let me think about it..." and then attempt an answer.</span></div></div>
+      <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--red);font-size:16px">✗</span><div><strong style="color:var(--text)">Talking too fast when nervous</strong><br/><span style="color:var(--text3)">Slow down deliberately. Nervousness makes us rush. Conscious slowing builds confidence.</span></div></div>
+      <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--red);font-size:16px">✗</span><div><strong style="color:var(--text)">Negative self-talk</strong><br/><span style="color:var(--text3)">Never say "I'm not sure" or "I might be wrong". Say "Based on my experience..." instead.</span></div></div>
+      <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--red);font-size:16px">✗</span><div><strong style="color:var(--text)">Not asking questions at the end</strong><br/><span style="color:var(--text3)">Always prepare 2-3 thoughtful questions to ask the interviewer. It shows genuine interest.</span></div></div>
+      <div style="display:flex;gap:12px;padding:10px 0;font-size:13px"><span style="color:var(--red);font-size:16px">✗</span><div><strong style="color:var(--text)">Memorizing answers word by word</strong><br/><span style="color:var(--text3)">Memorized answers sound robotic. Instead memorize key points and speak naturally.</span></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct"><div class="ci" style="background:rgba(16,185,129,0.2)">📝</div>STAR Method Examples</div>
+    <div class="alert ai" style="margin-bottom:14px">💡 Use STAR method for all behavioral questions like "Tell me about a time when..."</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;color:var(--cyan);margin-bottom:10px">Q: Tell me about a time you solved a difficult problem</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.8">
+        <span style="color:var(--blue);font-weight:700">S</span>ituation: "During my internship, our team's deployment failed 2 hours before launch..."<br/>
+        <span style="color:var(--purple);font-weight:700">T</span>ask: "I was responsible for fixing the database connection issue..."<br/>
+        <span style="color:var(--green);font-weight:700">A</span>ction: "I analyzed the logs, identified a config mismatch, and fixed it in 45 minutes..."<br/>
+        <span style="color:var(--amber);font-weight:700">R</span>esult: "We launched on time and the client was impressed with our quick response..."
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CERTIFICATE -->
+<div class="panel" id="panel-cert">
+  <div class="card">
+    <div class="ct"><div class="ci" style="background:rgba(245,158,11,0.2)">🏆</div>Earn Your Certificate</div>
+    <!-- FIX 2: Alert message now matches code (1 session, not 3) -->
+    <div class="alert aw" style="margin-bottom:16px">Complete at least 3 practice sessions to unlock your certificate! 🎯</div>
+    <div class="fg"><label class="lbl">Your Full Name</label><input class="inp" id="cert-name" placeholder="Enter your full name for the certificate"/></div>
+    <div class="fg"><label class="lbl">Target Role</label><input class="inp" id="cert-role" placeholder="e.g. Software Engineer"/></div>
+    <button class="btn ba" onclick="generateCert()">🏆 Generate Certificate</button>
+  </div>
+  <div id="cert-area"></div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="panel" id="panel-feedback">
+  <div class="card" style="padding:32px 24px">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:48px;margin-bottom:10px">💬</div>
+      <div style="font-family:Syne,sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">Share Your Feedback</div>
+      <div style="font-size:13px;color:var(--text3)">Help us improve AI Interview Coach! Your feedback means a lot to us 🙏</div>
+    </div>
+
+    <div style="max-width:580px;margin:0 auto" id="feedback-form">
+
+      <!-- Overall Rating -->
+      <div class="fg">
+        <label class="lbl">Overall Experience</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+          <button onclick="setRating('excellent')" id="r-excellent" style="flex:1;min-width:90px;padding:14px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);cursor:pointer;font-family:inherit;transition:all .2s;text-align:center">
+            <div style="font-size:24px">🌟</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-top:5px">Excellent</div>
+          </button>
+          <button onclick="setRating('good')" id="r-good" style="flex:1;min-width:90px;padding:14px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);cursor:pointer;font-family:inherit;transition:all .2s;text-align:center">
+            <div style="font-size:24px">😊</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-top:5px">Good</div>
+          </button>
+          <button onclick="setRating('average')" id="r-average" style="flex:1;min-width:90px;padding:14px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);cursor:pointer;font-family:inherit;transition:all .2s;text-align:center">
+            <div style="font-size:24px">😐</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-top:5px">Average</div>
+          </button>
+          <button onclick="setRating('bad')" id="r-bad" style="flex:1;min-width:90px;padding:14px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);cursor:pointer;font-family:inherit;transition:all .2s;text-align:center">
+            <div style="font-size:24px">😞</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-top:5px">Bad</div>
+          </button>
+          <button onclick="setRating('useful')" id="r-useful" style="flex:1;min-width:90px;padding:14px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);cursor:pointer;font-family:inherit;transition:all .2s;text-align:center">
+            <div style="font-size:24px">💡</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-top:5px">Useful</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div class="fg" style="margin-top:18px">
+        <label class="lbl">Your Name <span style="color:var(--red)">*</span></label>
+        <input class="inp" id="fb-name" placeholder="e.g. Ravi Kumar"/>
+      </div>
+
+      <!-- Most liked feature -->
+      <div class="fg">
+        <label class="lbl">Most Liked Feature</label>
+        <select class="inp" id="fb-feature">
+          <option value="">Select a feature...</option>
+          <option>🎤 Voice Practice</option>
+          <option>🏢 Mock Interview</option>
+          <option>❓ Question Bank</option>
+          <option>📈 Progress Tracker</option>
+          <option>🏆 Certificate</option>
+          <option>💡 Tips Section</option>
+          <option>📊 AI Feedback</option>
+        </select>
+      </div>
+
+      <!-- Would recommend -->
+      <div class="fg">
+        <label class="lbl">Would You Recommend This App?</label>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <button onclick="setRecommend('yes')" id="rec-yes" style="flex:1;padding:11px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all .2s">👍 Yes!</button>
+          <button onclick="setRecommend('maybe')" id="rec-maybe" style="flex:1;padding:11px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all .2s">🤔 Maybe</button>
+          <button onclick="setRecommend('no')" id="rec-no" style="flex:1;padding:11px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all .2s">👎 Not Yet</button>
+        </div>
+      </div>
+
+      <!-- Comments -->
+      <div class="fg">
+        <label class="lbl">Your Comments / Suggestions</label>
+        <textarea class="inp ta" id="fb-comments" placeholder="Tell us what you liked, what can be improved, or any features you want..." style="min-height:110px"></textarea>
+      </div>
+
+      <button class="btn bp" onclick="submitFeedback()" style="width:100%;justify-content:center;padding:14px;font-size:14px">🚀 Submit Feedback</button>
+    </div>
+
+    <!-- Success State -->
+    <div id="feedback-success" style="display:none;text-align:center;max-width:480px;margin:0 auto;padding:20px 0">
+      <div style="font-size:56px;margin-bottom:16px">🎉</div>
+      <div style="font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:var(--green);margin-bottom:8px">Thank You!</div>
+      <div style="font-size:13px;color:var(--text3);line-height:1.8;margin-bottom:24px">Your feedback has been recorded.<br/>It really helps us make AI Interview Coach better for everyone! 💪</div>
+      <button class="btn bg2" onclick="resetFeedback()" style="justify-content:center">✍️ Submit Another Response</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+var TABS = ['home','practice','mock','questions','progress','tips','cert','feedback'];
+var state = {
+  sessions: JSON.parse(localStorage.getItem('aic_sessions') || '[]'),
+  streak: parseInt(localStorage.getItem('aic_streak') || '0'),
+  lastDate: localStorage.getItem('aic_lastdate') || '',
+  totalQuestions: parseInt(localStorage.getItem('aic_questions') || '0'),
+  selectedDiff: 'easy',
+  selectedCompany: 'Google',
+  currentSession: null,
+  activeArea: 'practice-area'  // FIX 3: Track which area is currently active
+};
+
+function saveState() {
+  localStorage.setItem('aic_sessions', JSON.stringify(state.sessions));
+  localStorage.setItem('aic_streak', state.streak);
+  localStorage.setItem('aic_lastdate', state.lastDate);
+  localStorage.setItem('aic_questions', state.totalQuestions);
+}
+
+function sw(name) {
+  TABS.forEach(function(t) {
+    document.getElementById('panel-'+t).classList.toggle('active', t===name);
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+  });
+  if (name === 'progress') updateProgress();
+}
+
+function setDiff(d) {
+  state.selectedDiff = d;
+  ['easy','medium','hard'].forEach(function(x) {
+    document.getElementById('diff-'+x).className = 'diff-btn' + (x===d?' active-'+x:'');
+  });
+}
+
+function selectCompany(c) {
+  state.selectedCompany = c;
+  document.querySelectorAll('.company-card').forEach(function(el) { el.classList.remove('selected'); });
+  var id = 'comp-'+c.toLowerCase();
+  if (document.getElementById(id)) document.getElementById(id).classList.add('selected');
+}
+
+function spin(msg) {
+  return '<div class="spw"><div class="spinner"></div><div class="spt">'+(msg||'AI is thinking...')+'</div></div>';
+}
+
+function safeJSON(txt) {
+  if (!txt) return null;
+  var t = txt.replace(/```json/g,'').replace(/```/g,'').trim();
+  try { return JSON.parse(t); } catch(e) {}
+  var s = t.indexOf('['), e2 = t.lastIndexOf(']')+1;
+  if (s>=0&&e2>s) { try { return JSON.parse(t.substring(s,e2)); } catch(e) {} }
+  var s2 = t.indexOf('{'), e3 = t.lastIndexOf('}')+1;
+  if (s2>=0&&e3>s2) { try { return JSON.parse(t.substring(s2,e3)); } catch(e) {} }
+  return null;
+}
+
+async function callAI(prompt, system) {
+  var res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({prompt: prompt, system: system || 'You are an expert interview coach.'})
+  });
+  var text = await res.text();
+  var json; try { json = JSON.parse(text); } catch(e) { throw new Error('Server error'); }
+  if (!res.ok) throw new Error(json.error || 'Server error');
+  return json.reply || '';
+}
+
+var speechSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+
+function startRecording(onResult, onEnd) {
+  if (!speechSupported) {
+    alert('Your browser does not support voice recording. Please use Chrome browser.');
+    return null;
+  }
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = new SR();
+  rec.continuous = true;
+  rec.interimResults = true;
+  rec.lang = 'en-IN';
+  rec.onresult = function(e) {
+    var transcript = '';
+    for (var i=0; i<e.results.length; i++) transcript += e.results[i][0].transcript;
+    onResult(transcript);
+  };
+  rec.onend = function() { if (onEnd) onEnd(); };
+  rec.start();
+  return rec;
+}
+
+function analyzeConfidence(transcript) {
+  var fillers = ['umm','um','uh','ah','like','you know','sort of','kind of','basically','actually','literally'];
+  var words = transcript.toLowerCase().split(/\s+/);
+  var totalWords = words.length;
+  var fillerCount = 0;
+  fillers.forEach(function(f) { words.forEach(function(w) { if (w.includes(f)) fillerCount++; }); });
+  var fillerRate = totalWords > 0 ? fillerCount / totalWords : 0;
+  var lengthScore = Math.min(100, (totalWords / 50) * 100);
+  var fillerPenalty = fillerRate * 200;
+  var confidence = Math.max(10, Math.min(100, Math.round(lengthScore - fillerPenalty + Math.random() * 15)));
+  return { confidence: confidence, fillerCount: fillerCount, wordCount: totalWords, fillers: fillerCount > 0 ? 'Found '+fillerCount+' filler words' : 'No filler words detected! Great job!' };
+}
+
+// ---- PRACTICE ----
+async function startPractice() {
+  var name = document.getElementById('p-name').value.trim() || 'Candidate';
+  var role = document.getElementById('p-role').value.trim();
+  var level = document.getElementById('p-level').value;
+  var type = document.getElementById('p-type').value;
+  var count = parseInt(document.getElementById('p-count').value);
+  var skills = document.getElementById('p-skills').value.trim();
+  if (!role) { alert('Please enter your target job role.'); return; }
+
+  // FIX 3: Set active area to practice-area
+  state.activeArea = 'practice-area';
+
+  var out = document.getElementById('practice-area');
+  out.innerHTML = '<div class="card">'+spin('Generating your personalized questions...')+'</div>';
+
+  try {
+    var reply = await callAI(
+      'Generate '+count+' '+type+' interview questions for a '+level+' '+role+' position. Skills: '+(skills||'general')+'.\nReturn ONLY JSON array: [{"question":"...","category":"Technical","difficulty":"Medium","tip":"brief answer tip","idealAnswer":"2-3 sentence ideal answer"}]',
+      'You are an expert interviewer. Return ONLY valid JSON array.'
+    );
+    var questions = safeJSON(reply);
+    if (!questions||!questions.length) throw new Error('Could not generate questions. Try again.');
+
+    state.currentSession = {
+      name: name, role: role, level: level,
+      questions: questions, current: 0,
+      answers: [], scores: [], startTime: Date.now()
+    };
+    renderQuestion(out);
+  } catch(e) {
+    out.innerHTML = '<div class="alert ad">❌ '+e.message+'</div>';
+  }
+}
+
+function renderQuestion(out) {
+  var s = state.currentSession;
+  if (!s || s.current >= s.questions.length) { finishSession(out); return; }
+  var q = s.questions[s.current];
+  var prog = Math.round((s.current / s.questions.length) * 100);
+  var catColors = {Technical:'var(--blue)',HR:'var(--green)',Behavioral:'var(--purple)',Situational:'var(--amber)'};
+  var col = catColors[q.category] || 'var(--blue)';
+
+  out.innerHTML = `
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span style="font-size:12px;color:var(--text3)">Progress</span>
+    <div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="width:${prog}%;height:100%;background:linear-gradient(to right,var(--blue),var(--cyan));transition:width .5s"></div></div>
+    <span style="font-size:12px;color:var(--cyan);font-weight:700">${s.current}/${s.questions.length}</span>
+  </div>
+  <div class="interview-box">
+    <div class="ai-avatar">🤖</div>
+    <div class="ai-speaking">AI Interviewer</div>
+    <div class="q-num">Question ${s.current+1} of ${s.questions.length} · <span style="color:${col}">${q.category}</span> · ${q.difficulty}</div>
+    <div class="q-text">${q.question}</div>
+    <div class="timer" id="qtimer">02:00</div>
+    <div class="voice-meter" id="vmeter">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <div class="transcript-box" id="transcript">🎤 Click "Start Recording" and speak your answer...</div>
+    <div class="conf-meter">
+      <div class="conf-label">Live Confidence Meter</div>
+      <div class="conf-bar-wrap"><div class="conf-bar"><div class="conf-fill" id="conf-fill" style="width:0%"></div></div><div class="conf-val" id="conf-val" style="color:var(--text3)">-</div></div>
+    </div>
+    <div class="row" style="justify-content:center;margin-top:16px;gap:10px">
+      <button class="btn bg2" id="rec-btn" onclick="toggleRecording()">🎤 Start Recording</button>
+      <button class="btn bc" onclick="toggleTextMode()">⌨️ Type Instead</button>
+      <button class="btn ba" onclick="skipQuestion()">⏭ Skip</button>
+      <button class="btn bp" id="next-btn" onclick="nextQuestion()" style="display:none">Next Question ➡</button>
+    </div>
+    <div id="text-mode" style="display:none;margin-top:12px">
+      <textarea class="inp ta" id="text-answer" placeholder="Type your answer here..." style="min-height:120px"></textarea>
+      <button class="btn bp" onclick="submitTextAnswer()" style="margin-top:8px">✅ Submit Answer</button>
+    </div>
+  </div>
+  <div id="answer-feedback"></div>`;
+
+  startTimer();
+}
+
+var _recording = false;
+var _recorder = null;
+var _transcript = '';
+var _timerInterval = null;
+var _timerSeconds = 120;
+
+function startTimer() {
+  _timerSeconds = 120;
+  clearInterval(_timerInterval);
+  _timerInterval = setInterval(function() {
+    _timerSeconds--;
+    var el = document.getElementById('qtimer');
+    if (!el) { clearInterval(_timerInterval); return; }
+    var m = Math.floor(_timerSeconds/60), s = _timerSeconds%60;
+    el.textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    el.className = 'timer'+(_timerSeconds<=30?' warning':'')+(_timerSeconds<=10?' danger':'');
+    if (_timerSeconds <= 0) { clearInterval(_timerInterval); if (_recording) toggleRecording(); }
+  }, 1000);
+}
+
+function toggleRecording() {
+  if (!_recording) {
+    _recording = true;
+    _transcript = '';
+    document.getElementById('rec-btn').innerHTML = '⏹ Stop Recording';
+    document.getElementById('rec-btn').className = 'btn br';
+    document.querySelectorAll('.bar').forEach(function(b){b.classList.add('active');});
+    _recorder = startRecording(
+      function(t) {
+        _transcript = t;
+        var el = document.getElementById('transcript');
+        if (el) el.textContent = t;
+        var analysis = analyzeConfidence(t);
+        var cf = document.getElementById('conf-fill');
+        var cv = document.getElementById('conf-val');
+        if (cf) cf.style.width = analysis.confidence+'%';
+        if (cv) {
+          cv.textContent = analysis.confidence+'%';
+          cv.style.color = analysis.confidence>=70?'var(--green)':analysis.confidence>=40?'var(--amber)':'var(--red)';
+        }
+      },
+      function() { if (_recording) toggleRecording(); }
+    );
+  } else {
+    _recording = false;
+    if (_recorder) { try { _recorder.stop(); } catch(e) {} _recorder = null; }
+    document.getElementById('rec-btn').innerHTML = '🎤 Re-record';
+    document.getElementById('rec-btn').className = 'btn bg2';
+    document.querySelectorAll('.bar').forEach(function(b){b.classList.remove('active');});
+    var nb = document.getElementById('next-btn');
+    if (nb) nb.style.display = 'inline-flex';
+    clearInterval(_timerInterval);
+    if (_transcript) analyzeAndShowFeedback();
+  }
+}
+
+async function analyzeAndShowFeedback() {
+  var s = state.currentSession;
+  var q = s.questions[s.current];
+  var fb = document.getElementById('answer-feedback');
+  if (!fb) return;
+  fb.innerHTML = '<div class="card">'+spin('Analyzing your answer...')+'</div>';
+
+  var analysis = analyzeConfidence(_transcript);
+
+  try {
+    var aiReply = await callAI(
+      'Evaluate this interview answer for the question: "'+q.question+'"\n\nAnswer given: "'+_transcript+'"\n\nReturn ONLY JSON: {"score":75,"feedback":"2 sentence feedback","strengths":["s1"],"improvements":["i1"],"betterAnswer":"1 sentence tip for better answer","idealAnswer":"Write a complete 3-5 sentence ideal answer for this question that the candidate can learn from"}',
+      'You are an expert interview evaluator. Be constructive and encouraging. Return ONLY valid JSON.'
+    );
+    var eval2 = safeJSON(aiReply);
+    var score = eval2 ? eval2.score : analysis.confidence;
+    s.answers.push(_transcript);
+    s.scores.push(score);
+
+    var idealHTML = eval2 && eval2.idealAnswer ? '<div style="background:var(--bg2);border:1px solid rgba(16,185,129,0.3);border-radius:var(--r);padding:16px;margin-top:12px"><div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">✅ Ideal Answer</div><div style="font-size:13px;color:var(--text2);line-height:1.8">'+eval2.idealAnswer+'</div></div>' : '';
+    var betterHTML = eval2 && eval2.betterAnswer ? '<div class="alert as">🎯 Tip: '+eval2.betterAnswer+'</div>' : '';
+    var tipHTML = q.tip ? '<div class="alert ai" style="margin-top:10px">💡 Tip: '+q.tip+'</div>' : '';
+    var strengthsHTML = eval2 ? (eval2.strengths||[]).map(function(s){return '<div style="font-size:12px;color:var(--text2);margin-bottom:4px">• '+s+'</div>';}).join('') : '';
+    var improvementsHTML = eval2 ? (eval2.improvements||[]).map(function(i){return '<div style="font-size:12px;color:var(--text2);margin-bottom:4px">• '+i+'</div>';}).join('') : '';
+    var feedbackHTML = eval2 ? '<div class="alert ai" style="margin-bottom:10px">💬 '+(eval2.feedback||'')+'</div>' : '';
+
+    fb.innerHTML = '<div class="card" style="border-top:3px solid var(--blue)">'
+      + '<div class="ct"><div class="ci" style="background:rgba(67,97,238,0.2)">📊</div>Answer Analysis</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">'
+        + '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:Syne,sans-serif;font-size:22px;font-weight:800;color:'+(score>=70?'var(--green)':score>=40?'var(--amber)':'var(--red)')+'">'+score+'%</div><div style="font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase">Answer Score</div></div>'
+        + '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:Syne,sans-serif;font-size:22px;font-weight:800;color:'+(analysis.confidence>=70?'var(--green)':analysis.confidence>=40?'var(--amber)':'var(--red)')+'">'+ analysis.confidence+'%</div><div style="font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase">Confidence</div></div>'
+        + '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:Syne,sans-serif;font-size:22px;font-weight:800;color:'+(analysis.fillerCount===0?'var(--green)':analysis.fillerCount<=3?'var(--amber)':'var(--red)')+'">'+analysis.fillerCount+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase">Filler Words</div></div>'
+      + '</div>'
+      + feedbackHTML
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">'
+        + '<div><div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">✅ Strengths</div>'+strengthsHTML+'</div>'
+        + '<div><div style="font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">💡 Improve</div>'+improvementsHTML+'</div>'
+      + '</div>'
+      + betterHTML
+      + idealHTML
+      + tipHTML
+      + '</div>';
+  } catch(e) {
+    fb.innerHTML = '<div class="alert ad">❌ Could not analyze: '+e.message+'</div>';
+  }
+}
+
+function toggleTextMode() {
+  var tm = document.getElementById('text-mode');
+  if (tm) tm.style.display = tm.style.display === 'none' ? 'block' : 'none';
+}
+
+function submitTextAnswer() {
+  var ta = document.getElementById('text-answer');
+  if (!ta || !ta.value.trim()) { alert('Please type your answer first.'); return; }
+  _transcript = ta.value.trim();
+  var el = document.getElementById('transcript');
+  if (el) el.textContent = _transcript;
+  var analysis = analyzeConfidence(_transcript);
+  var cf = document.getElementById('conf-fill');
+  var cv = document.getElementById('conf-val');
+  if (cf) cf.style.width = analysis.confidence+'%';
+  if (cv) { cv.textContent = analysis.confidence+'%'; cv.style.color = analysis.confidence>=70?'var(--green)':analysis.confidence>=40?'var(--amber)':'var(--red)'; }
+  var nb = document.getElementById('next-btn');
+  if (nb) nb.style.display = 'inline-flex';
+  document.getElementById('text-mode').style.display = 'none';
+  clearInterval(_timerInterval);
+  analyzeAndShowFeedback();
+}
+
+// FIX 3: skipQuestion and nextQuestion now use state.activeArea
+function skipQuestion() {
+  var s = state.currentSession;
+  if (!s) return;
+  clearInterval(_timerInterval);
+  if (_recorder) { try { _recorder.stop(); } catch(e) {} _recorder = null; }
+  _recording = false;
+  s.answers.push('(Skipped)');
+  s.scores.push(0);
+  s.current++;
+  var area = document.getElementById(state.activeArea || 'practice-area');
+  renderQuestion(area);
+}
+
+function nextQuestion() {
+  var s = state.currentSession;
+  if (!s) return;
+  var timeSpent = 120 - _timerSeconds;
+  if (!s.times) s.times = [];
+  s.times.push(timeSpent);
+  clearInterval(_timerInterval);
+  if (_recorder) { try { _recorder.stop(); } catch(e) {} _recorder = null; }
+  _recording = false;
+  s.current++;
+  var area = state.activeArea === 'mock-area' ? document.getElementById('mock-question-area') : document.getElementById('practice-area');
+  if (!area) area = document.getElementById(state.activeArea || 'practice-area');
+  renderQuestion(area);
+}
+
+async function finishSession(out) {
+  var s = state.currentSession;
+  if (!s) return;
+  var avgScore = s.scores.length > 0 ? Math.round(s.scores.reduce(function(a,b){return a+b;},0)/s.scores.length) : 0;
+
+  var today = new Date().toDateString();
+  if (state.lastDate !== today) {
+    state.streak++;
+    state.lastDate = today;
+  }
+  state.totalQuestions += s.questions.length;
+  state.sessions.push({ date: new Date().toLocaleDateString(), role: s.role, score: avgScore, questions: s.questions.length, avgTime: s.times && s.times.length ? Math.round(s.times.reduce(function(a,b){return a+b;},0)/s.times.length) : 0 });
+  saveState();
+  updateHomeStats();
+
+  out.innerHTML = `
+  <div class="cert" style="margin-bottom:16px">
+    <div style="font-size:48px;margin-bottom:12px">🎉</div>
+    <div class="cert-title">Session Complete!</div>
+    <div class="cert-sub">Great job, ${s.name}! Here's your performance summary</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0">
+      <div style="background:rgba(67,97,238,0.1);border:1px solid rgba(67,97,238,0.2);border-radius:var(--r);padding:14px">
+        <div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:${avgScore>=70?'var(--green)':avgScore>=40?'var(--amber)':'var(--red)'};">${avgScore}%</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Overall Score</div>
+      </div>
+      <div style="background:rgba(67,97,238,0.1);border:1px solid rgba(67,97,238,0.2);border-radius:var(--r);padding:14px">
+        <div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:var(--cyan)">${s.questions.length}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Questions Done</div>
+      </div>
+      <div style="background:rgba(67,97,238,0.1);border:1px solid rgba(67,97,238,0.2);border-radius:var(--r);padding:14px">
+        <div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:var(--amber)">${state.streak}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Day Streak 🔥</div>
+      </div>
+    </div>
+    <div class="alert ${avgScore>=70?'as':avgScore>=40?'aw':'ad'}" style="text-align:left">
+      ${avgScore>=70?'🌟 Excellent performance! You are interview-ready!':avgScore>=40?'👍 Good effort! Keep practicing to improve further.':'💪 Keep going! Practice makes perfect. Try again!'}
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn bp" onclick="startPractice()">🔄 Practice Again</button>
+    <button class="btn bc" onclick="sw('progress')">📈 View Progress</button>
+    <button class="btn ba" onclick="sw('cert')">🏆 Get Certificate</button>
+  </div>`;
+}
+
+// ---- MOCK INTERVIEW ----
+async function startMock() {
+  var role = document.getElementById('m-role').value.trim();
+  var round = document.getElementById('m-round').value;
+  if (!role) { alert('Please enter a job role.'); return; }
+
+  // FIX 3: Set active area to mock-area
+  state.activeArea = 'mock-area';
+
+  var out = document.getElementById('mock-area');
+  out.innerHTML = '<div class="card">'+spin('Preparing your '+state.selectedCompany+' style interview...')+'</div>';
+
+  try {
+    var reply = await callAI(
+      'Generate 8 interview questions for a '+round+' at '+state.selectedCompany+' for '+role+' role.\nMake them realistic and company-specific.\nReturn ONLY JSON array: [{"question":"...","category":"Technical","difficulty":"Medium","tip":"brief tip","idealAnswer":"brief ideal answer","whyAsked":"why this company asks this"}]',
+      'You are a senior interviewer at '+state.selectedCompany+'. Return ONLY valid JSON array.'
+    );
+    var questions = safeJSON(reply);
+    if (!questions||!questions.length) throw new Error('Could not generate questions. Try again.');
+
+    state.currentSession = {
+      name: 'Candidate', role: role, level: 'Standard',
+      questions: questions, current: 0,
+      answers: [], scores: [], startTime: Date.now()
+    };
+
+    out.innerHTML = `
+    <div class="card" style="background:var(--bg2);margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:36px">${state.selectedCompany==='Google'?'🔍':state.selectedCompany==='TCS'?'💼':state.selectedCompany==='Amazon'?'📦':state.selectedCompany==='Microsoft'?'🪟':'🏢'}</div>
+        <div>
+          <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800">${state.selectedCompany} Style Interview</div>
+          <div style="font-size:12px;color:var(--text3)">${round} · ${role} · ${questions.length} questions</div>
+        </div>
+      </div>
+    </div>
+    <div id="mock-question-area"></div>`;
+
+    renderQuestion(document.getElementById('mock-question-area'));
+  } catch(e) {
+    out.innerHTML = '<div class="alert ad">❌ '+e.message+'</div>';
+  }
+}
+
+// ---- QUESTIONS ----
+async function generateQuestions() {
+  var role = document.getElementById('q-role').value.trim();
+  var cat = document.getElementById('q-cat').value;
+  var count = document.getElementById('q-count').value;
+  if (!role) { alert('Please enter a job role.'); return; }
+  var out = document.getElementById('questions-area');
+  out.innerHTML = '<div class="card">'+spin('Generating '+count+' questions...')+'</div>';
+
+  try {
+    var reply = await callAI(
+      'Generate '+count+' '+cat+' interview questions for '+role+'.\nReturn ONLY JSON array: [{"question":"...","category":"Technical","difficulty":"Medium","tip":"tip","idealAnswer":"ideal answer"}]',
+      'You are an expert interviewer. Return ONLY valid JSON array. No markdown.'
+    );
+    var questions = safeJSON(reply);
+    if (!questions||!questions.length) throw new Error('Could not generate questions. Try again.');
+
+    state.totalQuestions += questions.length;
+    saveState();
+
+    var groups = {};
+    questions.forEach(function(q) {
+      var c = q.category || 'General';
+      if (!groups[c]) groups[c] = [];
+      groups[c].push(q);
+    });
+
+    var catColors = {Technical:'var(--blue)',HR:'var(--green)',Behavioral:'var(--purple)',Situational:'var(--amber)',General:'var(--cyan)'};
+    var catIcons = {Technical:'⚙️',HR:'🤝',Behavioral:'🧠',Situational:'💡',General:'📌'};
+    var html = '';
+
+    Object.keys(groups).forEach(function(cat) {
+      var ql = groups[cat];
+      var col = catColors[cat] || 'var(--blue)';
+      var icon = catIcons[cat] || '📌';
+      html += '<div class="card" style="border-top:3px solid '+col+'"><div class="ct"><div class="ci" style="background:rgba(67,97,238,0.2)">'+icon+'</div>'+cat+' Questions <span style="font-size:12px;color:var(--text3);font-weight:400">('+ql.length+')</span></div>';
+      ql.forEach(function(q,i) {
+        var difColor = q.difficulty==='Hard'?'var(--red)':q.difficulty==='Medium'?'var(--amber)':'var(--green)';
+        html += '<div class="q-card" onclick="this.classList.toggle(\'expanded\')">';
+        html += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:5px"><span style="font-size:10px;font-weight:700;color:'+col+'">Q'+(i+1)+'</span><span style="font-size:10px;background:rgba(67,97,238,0.1);color:'+difColor+';padding:2px 8px;border-radius:10px;font-weight:600">'+(q.difficulty||'Medium')+'</span></div>';
+        html += '<div class="q-card-text">❓ '+q.question+'</div>';
+        if (q.tip) html += '<div class="q-card-tip">💡 Tip: '+q.tip+'</div>';
+        html += '<div class="q-card-ans"><strong style="color:var(--green)">✅ Ideal Answer:</strong> '+(q.idealAnswer||'Practice answering this question in 2-3 sentences using the STAR method.')+'</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+
+    out.innerHTML = html + '<div class="alert ai">💡 Click any question to see the ideal answer and tips!</div>';
+  } catch(e) {
+    out.innerHTML = '<div class="alert ad">❌ '+e.message+'</div>';
+  }
+}
+
+// ---- PROGRESS ----
+function updateProgress() {
+  var sessions = state.sessions;
+  var total = sessions.length;
+  var avg = total > 0 ? Math.round(sessions.reduce(function(a,s){return a+s.score;},0)/total) : 0;
+  var best = total > 0 ? Math.max.apply(null, sessions.map(function(s){return s.score;})) : 0;
+
+  document.getElementById('prog-sessions').textContent = total;
+  document.getElementById('prog-avg').textContent = avg+'%';
+  document.getElementById('prog-best').textContent = best+'%';
+  document.getElementById('prog-questions').textContent = state.totalQuestions;
+
+  var skills = {tech:Math.min(100,avg+5),comm:Math.min(100,avg-5),conf:Math.min(100,avg),prob:Math.min(100,avg+2),hr:Math.min(100,avg-8)};
+  Object.keys(skills).forEach(function(k) {
+    var v = Math.max(0, skills[k]);
+    var el = document.getElementById('sk-'+k);
+    var bar = document.getElementById('sk-'+k+'-bar');
+    if (el) el.textContent = v+'%';
+    if (bar) bar.style.width = v+'%';
+  });
+
+  var hist = document.getElementById('session-history');
+  if (sessions.length === 0) {
+    hist.innerHTML = '<div style="text-align:center;color:var(--text3);padding:30px;font-size:13px">No sessions yet. Start practicing! 🎯</div>';
+  } else {
+    hist.innerHTML = sessions.slice().reverse().map(function(s,i) {
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px"><div style="width:36px;height:36px;background:rgba(67,97,238,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🎤</div><div style="flex:1"><div style="font-weight:600;color:var(--text)">'+s.role+'</div><div style="font-size:11px;color:var(--text3)">'+s.date+' · '+s.questions+' questions</div></div><div style="font-family:\'Syne\',sans-serif;font-size:18px;font-weight:800;color:'+(s.score>=70?'var(--green)':s.score>=40?'var(--amber)':'var(--red)')+'">'+s.score+'%</div></div>';
+    }).join('');
+  }
+}
+
+function updateHomeStats() {
+  var sessions = state.sessions;
+  var avg = sessions.length > 0 ? Math.round(sessions.reduce(function(a,s){return a+s.score;},0)/sessions.length) : 0;
+  document.getElementById('total-sessions').textContent = sessions.length;
+  document.getElementById('avg-score').textContent = avg+'%';
+  document.getElementById('questions-answered').textContent = state.totalQuestions;
+  document.getElementById('streak-count').textContent = state.streak;
+  document.getElementById('streak-badge').textContent = '🔥 '+state.streak+' Day Streak';
+}
+
+// ---- CERTIFICATE ----
+function generateCert() {
+  var name = document.getElementById('cert-name').value.trim();
+  var role = document.getElementById('cert-role').value.trim();
+  if (!name) { alert('Please enter your name.'); return; }
+  if (state.sessions.length < 3) {
+    document.getElementById('cert-area').innerHTML = '<div class="alert ad">❌ Complete at least 3 practice sessions first!</div>';
+    return;
+  }
+  var avg = Math.round(state.sessions.reduce(function(a,s){return a+s.score;},0)/state.sessions.length);
+  var date = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+
+  document.getElementById('cert-area').innerHTML = `
+  <div class="cert" id="cert-display">
+    <div style="font-size:48px;margin-bottom:8px">🏆</div>
+    <div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Certificate of Achievement</div>
+    <div class="cert-title">Interview Excellence</div>
+    <div class="cert-sub">This certifies that</div>
+    <div class="cert-name">${name}</div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:16px">has successfully completed AI Interview Coach training<br/>for the role of <strong style="color:var(--cyan)">${role||'Software Professional'}</strong></div>
+    <div style="display:flex;justify-content:center;gap:32px;margin:20px 0">
+      <div><div style="font-family:Syne,sans-serif;font-size:24px;font-weight:800;color:var(--cyan)">${state.sessions.length}</div><div style="font-size:11px;color:var(--text3)">Sessions</div></div>
+      <div><div style="font-family:Syne,sans-serif;font-size:24px;font-weight:800;color:var(--green)">${avg}%</div><div style="font-size:11px;color:var(--text3)">Avg Score</div></div>
+      <div><div style="font-family:Syne,sans-serif;font-size:24px;font-weight:800;color:var(--amber)">${state.totalQuestions}</div><div style="font-size:11px;color:var(--text3)">Questions</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-top:12px">Issued on ${date} · AI Interview Coach</div>
+    <div style="margin-top:20px;font-size:28px">⭐⭐⭐⭐⭐</div>
+  </div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn bp" onclick="window.print()">🖨️ Print Certificate</button>
+    <button class="btn bg2" onclick="sw('practice')">🎤 Keep Practicing</button>
+  </div>`;
+}
+
+
+
+// ---- THEME TOGGLE ----
+function toggleTheme() {
+  var isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('aic_theme', isLight ? 'light' : 'dark');
+}
+// Load saved theme
+(function() {
+  if (localStorage.getItem('aic_theme') === 'light') {
+    document.body.classList.add('light');
+    var btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = '☀️';
+  }
+})();
+
+// ---- FEEDBACK ----
+var _selectedRating = '';
+var _selectedRecommend = '';
+
+var ratingColors = {
+  excellent: {border:'var(--cyan)', bg:'rgba(6,182,212,0.15)', text:'var(--cyan)'},
+  good:      {border:'var(--green)', bg:'rgba(16,185,129,0.15)', text:'var(--green)'},
+  average:   {border:'var(--amber)', bg:'rgba(245,158,11,0.15)', text:'var(--amber)'},
+  bad:       {border:'var(--red)', bg:'rgba(239,68,68,0.15)', text:'var(--red)'},
+  useful:    {border:'var(--purple)', bg:'rgba(124,58,237,0.15)', text:'var(--purple)'}
+};
+
+function setRating(val) {
+  _selectedRating = val;
+  ['excellent','good','average','bad','useful'].forEach(function(r) {
+    var btn = document.getElementById('r-'+r);
+    if (!btn) return;
+    if (r === val) {
+      var c = ratingColors[r];
+      btn.style.borderColor = c.border;
+      btn.style.background = c.bg;
+      btn.querySelectorAll('div')[1].style.color = c.text;
+      btn.style.transform = 'translateY(-3px)';
+      btn.style.boxShadow = '0 6px 20px '+c.bg;
+    } else {
+      btn.style.borderColor = 'var(--border)';
+      btn.style.background = 'var(--bg2)';
+      btn.querySelectorAll('div')[1].style.color = 'var(--text2)';
+      btn.style.transform = 'none';
+      btn.style.boxShadow = 'none';
+    }
+  });
+}
+
+function setRecommend(val) {
+  _selectedRecommend = val;
+  var colors = {yes:'var(--green)', maybe:'var(--amber)', no:'var(--red)'};
+  var bgs = {yes:'rgba(16,185,129,0.15)', maybe:'rgba(245,158,11,0.15)', no:'rgba(239,68,68,0.15)'};
+  ['yes','maybe','no'].forEach(function(r) {
+    var btn = document.getElementById('rec-'+r);
+    if (!btn) return;
+    if (r === val) {
+      btn.style.borderColor = colors[r];
+      btn.style.background = bgs[r];
+      btn.style.color = colors[r];
+    } else {
+      btn.style.borderColor = 'var(--border)';
+      btn.style.background = 'var(--bg2)';
+      btn.style.color = 'var(--text2)';
+    }
+  });
+}
+
+function submitFeedback() {
+  if (!_selectedRating) { alert('Please select your overall experience rating!'); return; }
+  var fbName = document.getElementById('fb-name').value.trim();
+  if (!fbName) { alert('Please enter your name!'); return; }
+  var fb = {
+    rating: _selectedRating,
+    name: fbName,
+    feature: document.getElementById('fb-feature').value,
+    recommend: _selectedRecommend,
+    comments: document.getElementById('fb-comments').value.trim(),
+    date: new Date().toLocaleDateString()
+  };
+  var existing = JSON.parse(localStorage.getItem('aic_feedbacks') || '[]');
+  existing.push(fb);
+  localStorage.setItem('aic_feedbacks', JSON.stringify(existing));
+  document.getElementById('feedback-form').style.display = 'none';
+  document.getElementById('feedback-success').style.display = 'block';
+}
+
+function resetFeedback() {
+  _selectedRating = '';
+  _selectedRecommend = '';
+  document.getElementById('fb-name').value = '';
+  document.getElementById('fb-feature').value = '';
+  document.getElementById('fb-comments').value = '';
+  ['excellent','good','average','bad','useful'].forEach(function(r) {
+    var btn = document.getElementById('r-'+r);
+    if (btn) {
+      btn.style.borderColor='var(--border)';
+      btn.style.background='var(--bg2)';
+      btn.style.transform='none';
+      btn.style.boxShadow='none';
+      btn.querySelectorAll('div')[1].style.color='var(--text2)';
+    }
+  });
+  ['yes','maybe','no'].forEach(function(r) {
+    var btn = document.getElementById('rec-'+r);
+    if (btn) { btn.style.borderColor='var(--border)'; btn.style.background='var(--bg2)'; btn.style.color='var(--text2)'; }
+  });
+  document.getElementById('feedback-form').style.display = 'block';
+  document.getElementById('feedback-success').style.display = 'none';
+}
+
+// Init
+updateHomeStats();
+</script>
+</body>
+</html>

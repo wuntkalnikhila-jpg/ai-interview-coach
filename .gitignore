@@ -1,0 +1,7 @@
+node_modules
+.env
+feedbacks.json
+frontend
+backend
+index.backup.html
+_check.js
